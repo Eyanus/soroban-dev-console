@@ -52,6 +52,7 @@ export default function ContractDetailPage() {
   const { activeWorkspaceId, addContractToWorkspace } = useWorkspaceStore();
   const { isConnected, isSandboxMode, enterSandbox } = useWallet();
   const spec = getSpec(contractId);
+  const [playgroundOpen, setPlaygroundOpen] = useState(false);
 
   useEffect(() => {
     if (networkParam) {
@@ -235,6 +236,8 @@ export default function ContractDetailPage() {
           </Button>
         </div>
       </div>
+
+      {playgroundOpen && <ContractPlayground contractId={contractId} />}
 
       {overview?.error && (
         <Alert variant="destructive">

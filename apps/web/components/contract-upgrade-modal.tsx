@@ -67,6 +67,8 @@ export function ContractUpgradeModal({
   const { isConnected, address } = useWallet();
   const { getActiveNetworkConfig } = useNetworkStore();
   const { specs } = useAbiStore();
+  const activeWorkspaceId = useWorkspaceStore((s) => s.activeWorkspaceId);
+  const recordSnapshot = useContractVersionStore((s) => s.recordSnapshot);
 
   const [isOpen, setIsOpen] = useState(false);
   const [funcName, setFuncName] = useState("upgrade");
@@ -194,6 +196,16 @@ export function ContractUpgradeModal({
       if (res.status !== "PENDING")
         throw new Error(`Submission failed: ${res.status}`);
 
+      // #1292: keep the pre-upgrade ABI so versions can be browsed and compared later.
+      if (currentSpec) {
+        recordSnapshot({
+          workspaceId: activeWorkspaceId,
+          contractId,
+          spec: currentSpec,
+          upgradedToWasmHash: wasmHash,
+        });
+      }
+
       toast.success("Upgrade transaction sent!");
       setIsOpen(false);
       resetState();
@@ -271,6 +283,11 @@ export function ContractUpgradeModal({
               resetState();
             }}
           />
+
+          {/* #1292: recorded ABI versions */}
+          <div className="rounded-md border p-3">
+            <VersionHistoryPanel contractId={contractId} currentSpec={currentSpec} />
+          </div>
 
           {/* Upgrade Function Name */}
           <div className="space-y-2">
