@@ -54,6 +54,7 @@ interface EventRecord {
   data: string;
   ledger: number;
   ts: string;
+  txHash?: string;
 }
 
 export function ContractEvents({ contractId }: ContractEventsProps) {
@@ -138,6 +139,7 @@ export function ContractEvents({ contractId }: ContractEventsProps) {
               : JSON.stringify(evt.value),
           ledger: evt.ledger,
           ts: evt.ledgerClosedAt,
+          txHash: (evt as { txHash?: string }).txHash,
         }));
 
         if (!mountedRef.current) return;
@@ -313,6 +315,7 @@ export function ContractEvents({ contractId }: ContractEventsProps) {
             )}
           </div>
           <div className="flex items-center gap-2">
+            <EventsExportMenu contractId={contractId} events={events} />
             <Select value={refreshInterval} onValueChange={(v) => handleRefreshChange(v as RefreshInterval)}>
               <SelectTrigger className="h-8 w-[110px]" aria-label="Auto-refresh interval">
                 <SelectValue />
